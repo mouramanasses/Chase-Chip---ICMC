@@ -10,11 +10,16 @@ import Modelo.Fogo;
 
 public class ControleDeJogo {
     
-    public void desenhaTudo(ArrayList<Personagem> e) {
-        for (int i = 0; i < e.size(); i++) {
-            e.get(i).autoDesenho();
+    public void desenhaTudo(ArrayList<Personagem> umaFase, Posicao heroPos) {
+    for (Personagem p : umaFase) {
+        if (p instanceof Chaser) {
+            ((Chaser)p).autoDesenho(heroPos); // usa a versão correta
+        } else {
+            p.autoDesenho(); // normal para os demais
         }
     }
+}
+
     
     public void processaTudo(ArrayList<Personagem> umaFase, Tela tela) {
         Hero hero = (Hero) umaFase.get(0);
@@ -24,6 +29,7 @@ public class ControleDeJogo {
               if (hero.getPosicao().igual(pIesimoPersonagem.getPosicao())) { //quando encosta no fogo
                     if (pIesimoPersonagem instanceof Fogo){
                         tela.perderVida(); // chama o método de perder vida
+                        tela.resetarPosição(); 
                         break;
     }
 }

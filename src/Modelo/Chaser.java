@@ -1,18 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Modelo;
 
 import Auxiliar.Consts;
-import Auxiliar.Desenho;
 import auxiliar.Posicao;
 import java.io.Serializable;
 
-/**
- *
- * @author 2373891
- */
 public class Chaser extends Personagem implements Serializable {
 
     private boolean iDirectionV;
@@ -22,35 +13,44 @@ public class Chaser extends Personagem implements Serializable {
         super(sNomeImagePNG);
         iDirectionV = true;
         iDirectionH = true;
-        
         this.bTransponivel = true;
     }
 
     public void computeDirection(Posicao heroPos) {
         if (heroPos.getColuna() < this.getPosicao().getColuna()) {
-            iDirectionH = true;
+            iDirectionH = true; // esquerda
         } else if (heroPos.getColuna() > this.getPosicao().getColuna()) {
-            iDirectionH = false;
+            iDirectionH = false; // direita
         }
+
         if (heroPos.getLinha() < this.getPosicao().getLinha()) {
-            iDirectionV = true;
+            iDirectionV = true; // cima
         } else if (heroPos.getLinha() > this.getPosicao().getLinha()) {
-            iDirectionV = false;
+            iDirectionV = false; // baixo
         }
     }
 
-    public void autoDesenho() {
+    public void autoDesenho(Posicao heroPos) {
         super.autoDesenho();
-        if (iDirectionH) {
-            this.moveLeft();
+
+        // Decide se vai mover vertical ou horizontal primeiro com base na distância
+        if (Math.abs(this.getPosicao().getLinha() - heroPos.getLinha()) >
+            Math.abs(this.getPosicao().getColuna() - heroPos.getColuna())) {
+            
+            // mover verticalmente primeiro
+            if (iDirectionV) {
+                this.moveUp();
+            } else {
+                this.moveDown();
+            }
+
         } else {
-            this.moveRight();
-        }
-        if (iDirectionV) {
-            this.moveUp();
-        } else {
-            this.moveDown();
+            // mover horizontalmente primeiro
+            if (iDirectionH) {
+                this.moveLeft();
+            } else {
+                this.moveRight();
+            }
         }
     }
-
 }

@@ -34,6 +34,10 @@ import java.util.zip.GZIPOutputStream;
 import javax.swing.JButton;
 import Modelo.ChipColetavel;
 import javax.swing.JOptionPane;
+import Modelo.Fase2;
+import Modelo.Fase3;
+import Modelo.Fase4;
+import Modelo.Fase5;
 
 public class Tela extends javax.swing.JFrame implements MouseListener, KeyListener {
 
@@ -100,6 +104,9 @@ this.go(); // inicia o timer de atualização do jogo
         System.exit(0);
     }
 }
+    public void resetarPosição(){ //após encostar no fogo, o jogador volta para a posição inicial
+       this.hero.setPosicao(1,1);
+    }
 
 
 
@@ -153,7 +160,7 @@ this.go(); // inicia o timer de atualização do jogo
             }
         }
         if (!this.faseAtual.isEmpty()) {
-            this.cj.desenhaTudo(faseAtual);
+            this.cj.desenhaTudo(faseAtual, hero.getPosicao());
             this.cj.processaTudo(faseAtual, this);
         }
 
@@ -168,7 +175,65 @@ this.go(); // inicia o timer de atualização do jogo
         g2.drawString("LEVEL: " + fase, 10, 20);
         g2.drawString("VIDAS: " + vidas, 180, 20);
         g2.drawString("CHIPS LEFT: " + contarChips(), 350, 20);
-
+        if (contarChips() == 0 && fase == 1){
+            fase++;
+            
+            Fase2 novaFase = new Fase2();
+            faseAtual.clear();
+            faseAtual.addAll(novaFase.criarFase());
+            
+            for(Personagem p : faseAtual){
+                if (p instanceof Hero){
+                    setHero((Hero) p);
+                    break;
+                }
+                }
+        }
+        
+        if (contarChips() == 0 && fase == 2){
+            fase++;
+            
+            Fase3 fase3 = new Fase3 ();
+            faseAtual.clear();
+            faseAtual.addAll(fase3.criarFase());
+            
+            for(Personagem p : faseAtual){
+                if (p instanceof Hero){
+                    setHero((Hero) p);
+                    break;
+                }
+                }
+        }
+        
+        if (contarChips() == 0 && fase == 3){
+            fase++;
+            
+            Fase4 fase4 = new Fase4 ();
+            faseAtual.clear();
+            faseAtual.addAll(fase4.criarFase());
+            
+            for(Personagem p : faseAtual){
+                if (p instanceof Hero){
+                    setHero((Hero) p);
+                    break;
+                }
+                }
+        }
+        
+         if (contarChips() == 0 && fase == 4){
+            fase++;
+            
+            Fase5 fase5 = new Fase5 ();
+            faseAtual.clear();
+            faseAtual.addAll(fase5.criarFase());
+            
+            for(Personagem p : faseAtual){
+                if (p instanceof Hero){
+                    setHero((Hero) p);
+                    break;
+                }
+                }
+        }
         
         g.dispose();
         g2.dispose();

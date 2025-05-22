@@ -19,12 +19,12 @@ public class Main {
         Fase1 fase1 = new Fase1();
         ArrayList<Personagem> personagens = fase1.criarFase();
         for (Personagem p : personagens) {
-    tela.addPersonagem(p);
-    if (p instanceof Hero) {
-        tela.setHero((Hero) p);// necessário para o teclado e a câmera funcionarem
-    }
-}
-tela.go(); // inicia o jogo (Timer de atualização)
+            tela.addPersonagem(p);
+                 if (p instanceof Hero) {
+                    tela.setHero((Hero) p);// necessário para o teclado e a câmera funcionarem
+                              }
+                                }
+          tela.go(); // inicia o jogo (Timer de atualização)
 
     }
 }
