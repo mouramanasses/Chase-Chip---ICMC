@@ -2,57 +2,78 @@ package Modelo;
 
 import java.util.ArrayList;
 
-public class Fase1 {
-    public ArrayList<Personagem> criarFase() {
-        ArrayList<Personagem> fase = new ArrayList<>();
+/**
+ * Fase1:
+ *  - Carrega mapa1.txt (com 0=chão, 1=parede, 2=moeda, 3=fogo, 4=portal),
+ *  - Posiciona o herói em (inicioLinha, inicioColuna),
+ *  - Cria automaticamente todos os objetos “ChipColetavel” e “Fogo” a partir do mapa,
+ */
+public class Fase1 extends Fase {
 
-        // Hero (jogador)
-        Hero hero = new Hero("Robbo.png");
-        hero.setPosicao(1, 1);
-        fase.add(hero);
+    public Fase1(String arquivoMapa, int xInicial, int yInicial) {
+        super(arquivoMapa, xInicial, yInicial);
 
-        // Mapa visual com blocos de cenário e chips
-        // 0 - chão (blackTile), 1 - parede (bricks), 2 - chip
-        int[][] mapa = {
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-            {1, 0, 0, 2, 0, 0, 0, 2, 0, 1},
-            {1, 0, 1, 1, 1, 0, 1, 1, 0, 1},
-            {1, 0, 0, 2, 0, 0, 0, 0, 0, 1},
-            {1, 2, 0, 1, 1, 1, 0, 1, 2, 1},
-            {1, 0, 0, 0, 2, 0, 0, 0, 0, 1},
-            {1, 0, 1, 1, 1, 1, 1, 1, 0, 1},
-            {1, 2, 0, 0, 0, 2, 0, 0, 0, 1},
-            {1, 0, 1, 1, 0, 1, 1, 0, 2, 1},
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-        };
+        // 1) Mapeia quais imagens serão usadas para cada valor do mapa:
+        spritesMapa.put(0, carregarImagem("chao.png"));
+        spritesMapa.put(1, carregarImagem("parede.png"));
+        spritesMapa.put(2, carregarImagem("moeda.png"));
+        spritesMapa.put(3, carregarImagem("fogo.png"));    // fogo virá do mapa (3)
+        spritesMapa.put(4, carregarImagem("portal.png"));  //portal de saída para próxima fase
 
+        // 2) Carrega a matriz de inteiros do arquivo-texto (sem criar objetos aqui)
+        carregarMapa();
+    }
+
+    @Override
+    public void inicializar() {
+        // 1) Posiciona o herói na posição inicial da fase
+        if (getHero() != null) {
+            getHero().setPosicao(getInicioLinha(), getInicioColuna());
+        }
+
+        int[][] mapa = getMapa();
+        int inicioLinha  = getInicioLinha();
+        int inicioColuna = getInicioColuna();
+
+        // 2) Varre o mapa para “2” (moeda), registra e cria o objeto ChipColetavel
         for (int i = 0; i < mapa.length; i++) {
             for (int j = 0; j < mapa[0].length; j++) {
-                switch (mapa[i][j]) {
-                    case 1 -> {
-                        Parede parede = new Parede("parede.png");
-                        parede.setPosicao(i, j);
-                        fase.add(parede);
-                    }
-                    case 2 -> {
-                        ChipColetavel chip = new ChipColetavel("moeda.png");
-                        chip.setPosicao(i, j);
-                        fase.add(chip);
-                    }
+                if (mapa[i][j] == 2) {
+                    // Registra mais um chip no total desta fase
+                    registrarChip();
+
+                    // Cria o ChipColetavel nessa posição global
+                    ChipColetavel chip = new ChipColetavel("moeda.png");
+                    chip.setPosicao(inicioLinha + i, inicioColuna + j);
+                    adicionarPersonagem(chip);
+
+                    // Para não desenhar o “2” por baixo do sprite do ChipColetavel,
+                    // mudamos esse tile para “0” (chão).
+                    mapa[i][j] = 0;
                 }
             }
         }
 
-        // Obstáculos de fogo posicionados manualmente
-        int[][] fogos = {
-            {3, 2}, {5, 3}, {7, 4}
-        };
-        for (int[] pos : fogos) {
-            Fogo fogo = new Fogo("fogo.png");
-            fogo.setPosicao(pos[0], pos[1]);
-            fase.add(fogo);
+        System.out.println("Chips registrados em Fase1: " + getTotalChips());
+
+        // 3) Varre o mapa procurando por valor “3” (fogo)
+        for (int i = 0; i < mapa.length; i++) {
+            for (int j = 0; j < mapa[0].length; j++) {
+                if (mapa[i][j] == 3) {
+                    Fogo fogo = new Fogo("fogo.png");
+                    fogo.setPosicao(inicioLinha + i, inicioColuna + j);
+                    fogo.setbTransponivel(false);
+                    fogo.setMortal(true);
+                    adicionarPersonagem(fogo);
+
+                    // Marca como chão para não recriar na próxima leitura
+                    mapa[i][j] = 0;
+                }
+            }
         }
 
-        return fase;
+        // 4) Não instanciamos nada para “4” (portal); se o seu código de desenho
+        //    usa spritesMapa.get(4), o tile continuará exibindo o sprite do portal,
+        //    mas não haverá Personagem associado em runtime.
     }
 }

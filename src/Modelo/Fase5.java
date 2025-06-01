@@ -1,72 +1,117 @@
 package Modelo;
 
 import java.util.ArrayList;
+import javax.swing.ImageIcon;
 
-public class Fase5 {
-    public ArrayList<Personagem> criarFase() {
-        ArrayList<Personagem> fase = new ArrayList<>();
+public class Fase5 extends Fase {
 
-        // Hero (posição inicial segura)
-        Hero hero = new Hero("Robbo.png");
-        hero.setPosicao(1, 1);
-        fase.add(hero);
+    public Fase5(String arquivoMapa, int xInicial, int yInicial) {
+        super(arquivoMapa, xInicial, yInicial);
 
-        // Mapa: 0 = chão, 1 = parede, 2 = chip
-        int[][] mapa = {
-            {1,1,1,1,1,1,1,1,1,1},
-            {1,0,0,0,1,0,0,2,0,1},
-            {1,0,1,0,0,0,1,0,0,1},
-            {1,2,0,0,0,0,0,0,2,1},
-            {1,1,1,0,1,1,1,1,0,1},
-            {1,0,2,0,0,2,0,1,0,1},
-            {1,0,1,1,1,1,0,1,0,1},
-            {1,0,0,0,0,0,0,0,0,1},
-            {1,2,1,1,0,1,1,1,0,1},
-            {1,1,1,1,1,1,1,1,1,1}
-        };
+        spritesMapa.put(0, carregarImagem("chao.png"));
+        spritesMapa.put(1, carregarImagem("parede.png"));
+        spritesMapa.put(2, carregarImagem("moeda.png"));
+        spritesMapa.put(3, carregarImagem("fogo.png"));
+        spritesMapa.put(4, carregarImagem("portal.png"));
+        spritesMapa.put(5, carregarImagem("laser.png")); 
 
+        // 2) Carrega o mapa de inteiros (preenche this.mapa):
+        carregarMapa();
+    }
+
+    @Override
+    public void inicializar() {
+        // 1) Posiciona o herói na posição inicial (xInicial, yInicial)
+        if (getHero() != null) {
+            getHero().setPosicao(getInicioLinha(), getInicioColuna());
+        }
+
+        int[][] mapa = getMapa();
+        int inicioLinha = getInicioLinha();
+        int inicioColuna = getInicioColuna();
+
+        // 2) Varre o mapa procurando por “2” (chips)
         for (int i = 0; i < mapa.length; i++) {
             for (int j = 0; j < mapa[0].length; j++) {
-                switch (mapa[i][j]) {
-                    case 1 -> {
-                        Parede parede = new Parede("parede.png");
-                        parede.setPosicao(i, j);
-                        fase.add(parede);
-                    }
-                    case 2 -> {
-                        ChipColetavel chip = new ChipColetavel("moeda.png");
-                        chip.setPosicao(i, j);
-                        fase.add(chip);
-                    }
+                int valor = mapa[i][j];
+
+                // 2.a) Se for “2”, registra chip e cria ChipColetavel
+                if (valor == 2) {
+                    registrarChip();
+                    ChipColetavel chip = new ChipColetavel("moeda.png");
+                    chip.setPosicao(inicioLinha + i, inicioColuna + j);
+                    adicionarPersonagem(chip);
+                    // Para não desenhar “2” por baixo do sprite, transformamos em chão:
+                    mapa[i][j] = 0;
                 }
+                // 2.b) Se for “4” (portal), deixamos apenas como tile: 
+                //     o desenho do portal será feito automaticamente via spritesMapa.
             }
         }
 
-        // 🔥 Fogos (removidos os centrais que trancavam tudo)
-        int[][] fogos = {
-            {2, 8}, {4, 8}, {6, 1}
-        };
-        for (int[] pos : fogos) {
-            Fogo fogo = new Fogo("fogo.png");
-            fogo.setPosicao(pos[0], pos[1]);
-            fase.add(fogo);
+        System.out.println("Chips registrados em Fase5: " + getTotalChips());
+
+        // 3) Agora varre o mapa procurando por “3” (fogos) e por "5" (lasers) e instancia:
+        for (int i = 0; i < mapa.length; i++) {
+            for (int j = 0; j < mapa[0].length; j++) {
+                if (mapa[i][j] == 3) {
+                    Fogo f = new Fogo("fogo.png");
+                    f.setPosicao(inicioLinha + i, inicioColuna + j);
+                    f.setbTransponivel(false);
+                    f.setMortal(true);
+                    adicionarPersonagem(f);
+                    mapa[i][j] = 0;
+                }
+                else if (mapa[i][j] == 5) {
+                    LaserBarrier lf = new LaserBarrier("laser.png");
+                    lf.setPosicao(inicioLinha + i, inicioColuna + j);
+                    lf.setbTransponivel(false);
+                    lf.setMortal(true);
+                    adicionarPersonagem(lf);
+                    mapa[i][j] = 0;
+            }
         }
+     }
 
-        // 🤖 Robô horizontal (roboPink)
-        BichinhoVaiVemHorizontal roboH = new BichinhoVaiVemHorizontal("roboPink.png");
-        roboH.setPosicao(3, 6); // patrulha perto de chip
-        fase.add(roboH);
+        BichinhoVaiVemHorizontal h1 = new BichinhoVaiVemHorizontal("RoboPink.png");
+        h1.setPosicao(inicioLinha + 2,  inicioColuna +  5);
+        adicionarPersonagem(h1);
 
-        // 🤖 Robô vertical (robo)
-        BichinhoVaiVemVertical roboV = new BichinhoVaiVemVertical("robo.png");
-        roboV.setPosicao(6, 4); // controla acesso ao centro
-        fase.add(roboV);
+        BichinhoVaiVemHorizontal h2 = new BichinhoVaiVemHorizontal("RoboPink.png");
+        h2.setPosicao(inicioLinha + 7,  inicioColuna + 8);
+        adicionarPersonagem(h2);
 
-        // 👣 Chaser (mais afastado do jogador)
-        Chaser perseguidor = new Chaser("Chaser.png");
-        perseguidor.setPosicao(7, 8); // entra em ação mais tarde
-        fase.add(perseguidor);
+        BichinhoVaiVemHorizontal h3 = new BichinhoVaiVemHorizontal("RoboPink.png");
+        h3.setPosicao(inicioLinha + 10, inicioColuna +  8);
+        adicionarPersonagem(h3);
 
-        return fase;
+        BichinhoVaiVemHorizontal h4 = new BichinhoVaiVemHorizontal("RoboPink.png");
+        h4.setPosicao(inicioLinha + 4, inicioColuna +  8);
+        adicionarPersonagem(h4);
+        
+        BichinhoVaiVemHorizontal h5 = new BichinhoVaiVemHorizontal("RoboPink.png");
+        h5.setPosicao(inicioLinha + 11, inicioColuna +  1);
+        adicionarPersonagem(h5);
+        
+        BichinhoVaiVemHorizontal h6 = new BichinhoVaiVemHorizontal("RoboPink.png");
+        h6.setPosicao(inicioLinha + 7, inicioColuna +  12);
+        adicionarPersonagem(h6);
+        
+        BichinhoVaiVemVertical v1 = new BichinhoVaiVemVertical("Robo.png");
+        v1.setPosicao(inicioLinha + 4,  inicioColuna + 15);
+        adicionarPersonagem(v1);
+
+        BichinhoVaiVemVertical v2 = new BichinhoVaiVemVertical("Robo.png");
+        v2.setPosicao(inicioLinha + 9,  inicioColuna +  4);
+        adicionarPersonagem(v2);
+
+        BichinhoVaiVemVertical v3 = new BichinhoVaiVemVertical("Robo.png");
+        v3.setPosicao(inicioLinha + 13, inicioColuna + 10);
+        adicionarPersonagem(v3);
+
+        //personagem novo adicionado nessa fase: inimido (chaser) que persegue o Hero
+        Chaser c1 = new Chaser("Chaser.png");
+        c1.setPosicao(inicioLinha + 9,  inicioColuna + 18);
+        adicionarPersonagem(c1);
     }
 }

@@ -4,25 +4,27 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Auxiliar/Consts.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Auxiliar/Desenho.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Auxiliar/Posicao.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Controler/Tela.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Modelo/BichinhoVaiVemHorizontal.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Modelo/Fase1.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Modelo/ChipColetavel.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Modelo/Fogo.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Modelo/Personagem.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Controler/ControleDeJogo.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Controler/Main.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Modelo/Parede.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Modelo/Hero.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Modelo/Fase2.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Modelo/BichinhoVaiVemVertical.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Modelo/Fase3.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Modelo/Fase4.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Modelo/Chaser.java</file>
-            <file>file:/C:/Users/Manassés%20Moura/Desktop/jogoPOO/src/Modelo/Fase5.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Controler/Tela.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Controler/ControleDeJogo.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Main.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/Fase3.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/Fase4.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/LaserBarrier.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/Fase2.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/Fase1.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/Fase5.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/Chaser.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/BichinhoVaiVemHorizontal.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/BichinhoVaiVemVertical.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Auxiliar/Consts.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Auxiliar/Desenho.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Auxiliar/Posicao.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/ChipColetavel.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/Fase.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/Fogo.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/Hero.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/Parede.java</file>
+            <file>file:/C:/Users/Manassés%20Moura/Desktop/Chase%20&amp;%20Chip%20-%20ICMC/src/Modelo/Personagem.java</file>
         </group>
     </open-files>
 </project-private>
