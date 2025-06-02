@@ -35,6 +35,14 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.Point;
+import java.io.ObjectInputStream;
+import java.util.List;
 import Modelo.Fase;
 import Modelo.Fase1;        
 import Modelo.Fase2;
@@ -83,6 +91,31 @@ public class Tela extends javax.swing.JFrame implements MouseListener, KeyListen
         initComponents();
         this.addMouseListener(this);
         this.addKeyListener(this);
+        
+        // Habilita DropTarget para aceitar arquivos ZIP
+        new DropTarget(this, DnDConstants.ACTION_COPY, new DropTargetAdapter() {
+            @Override
+            public void drop(DropTargetDropEvent dtde) {
+                try {
+                    dtde.acceptDrop(DnDConstants.ACTION_COPY);
+                    Object transferData = dtde.getTransferable()
+                                              .getTransferData(java.awt.datatransfer.DataFlavor.javaFileListFlavor);
+                    @SuppressWarnings("unchecked")
+                    List<File> droppedFiles = (List<File>) transferData;
+                    for (File f : droppedFiles) {
+                        if (f.getName().toLowerCase().endsWith(".zip")) {
+                            Point dropPoint = dtde.getLocation();
+                            handleFileDrop(f, dropPoint);
+                        }
+                    }
+                    dtde.dropComplete(true);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    dtde.dropComplete(false);
+                }
+            }
+        }, true);
+
         
         /*Cria a janela do tamanho do tabuleiro + insets (bordas) da janela*/
         this.setSize(
@@ -136,7 +169,52 @@ public class Tela extends javax.swing.JFrame implements MouseListener, KeyListen
     atualizaCamera();
 }
       
-  
+  /**
+     * Trata um arquivo ZIP arrastado para a janela.
+     * Deserializa o Personagem de dentro, posiciona na célula correspondente e adiciona à fase.
+     */
+    private void handleFileDrop(File arquivoZip, Point dropPoint) {
+        try (ObjectInputStream in = new ObjectInputStream(
+                  new GZIPInputStream(new FileInputStream(arquivoZip)))) {
+
+            // Desserializa o objeto Personagem
+            Personagem novoPersonagem = (Personagem) in.readObject();
+
+            // Recarrega o sprite do personagem (campo transient)
+            novoPersonagem.recarregarSprite();
+
+            // Converte coordenadas de pixel (dropPoint) em (linha, coluna) do mundo:
+            int x = dropPoint.x;
+            int y = dropPoint.y;
+
+            // Subtrai as bordas (insets) da janela:
+            int relX = x - getInsets().left;
+            int relY = y - getInsets().top - Desenho.HUD_HEIGHT;
+
+            if (relX < 0 || relY < 0) {
+                // Drop fora da área de jogo (HUD ou borda), ignora.
+                return;
+            }
+
+            // Calcula coluna e linha do tile clicado, levando em conta o scrolling da câmera:
+            int cellColuna = (relX / Consts.CELL_SIDE) + cameraColuna;
+            int cellLinha  = (relY / Consts.CELL_SIDE) + cameraLinha;
+
+            // Posiciona o personagem no mundo (linha, coluna)
+            novoPersonagem.setPosicao(cellLinha, cellColuna);
+
+            // Adiciona à fase atual
+            faseAtual.adicionarPersonagem(novoPersonagem);
+
+            // Força repaint para desenhar imediatamente
+            repaint();
+
+        } catch (IOException | ClassNotFoundException ex) {
+            ex.printStackTrace();
+            System.err.println("Erro ao carregar personagem de ZIP: " + ex.getMessage());
+        }
+    }
+    
     public int getCameraLinha() {
         return cameraLinha;
     }
@@ -414,9 +492,21 @@ public void keyPressed(KeyEvent e) {
             break;
         case KeyEvent.VK_C:
             this.faseAtual.getPersonagens().clear();
-            break;
-        default:
+            repaint();
             return;
+            
+            // <<< SALVAR JOGO: chama o método que usa Serializador
+            case KeyEvent.VK_S:
+                salvarJogo();
+                return;
+
+            // <<< CARREGAR JOGO: chama o método que usa Serializador
+            case KeyEvent.VK_L:
+                carregarJogo();
+                return;
+
+            default:
+                return;
     }
 
     Hero tentativa = new Hero("hero.png");
@@ -430,7 +520,59 @@ public void keyPressed(KeyEvent e) {
     this.setTitle("-> Cell: " + (hero.getPosicao().getColuna()) + ", " + (hero.getPosicao().getLinha()));
 }
 
+ private void salvarJogo() {
+        // Se tiver Serializador.java, faça:
+        // Serializador.salvarEstado(faseAtual, "savegame.dat");
+        // Serializador.salvarEstado(hero,     "hero.dat");
 
+        // Ou, se preferir inline:
+        try ( ObjectOutputStream out =
+                  new ObjectOutputStream(
+                    new GZIPOutputStream(
+                      new FileOutputStream("savegame.dat") ) ) )
+        {
+            out.writeObject(faseAtual);
+            out.writeObject(hero);
+            System.out.println("Jogo salvo com sucesso.");
+        } catch (IOException e) {
+            System.err.println("Erro ao salvar o jogo: " + e.getMessage());
+        }
+    }
+
+    private void carregarJogo() {
+        // Com Serializador.java seria:
+        // faseAtual = (Fase) Serializador.carregarEstado("savegame.dat");
+        // hero     = (Hero)  Serializador.carregarEstado("hero.dat");
+
+        // Ou inline:
+        try ( ObjectInputStream in =
+                  new ObjectInputStream(
+                    new GZIPInputStream(
+                      new FileInputStream("savegame.dat") ) ) )
+        {
+            faseAtual = (Fase) in.readObject();
+            hero      = (Hero)  in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Erro ao carregar o jogo: " + e.getMessage());
+            return;
+        }
+
+        // 1) Recarrega sprites de todos os personagens da fase atual
+        for (Personagem p : faseAtual.getPersonagens()) {
+            p.recarregarSprite();
+        }
+        // 2) Recarrega sprite do herói
+        hero.recarregarSprite();
+
+        // 3) Garante que todas as fases usem o mesmo objeto hero
+        for (Fase f : fases) {
+            f.setHero(hero);
+        }
+
+        atualizaCamera();
+        repaint();
+        System.out.println("Jogo carregado com sucesso.");
+    }
  public void mousePressed(MouseEvent e) {
     /* Clique do mouse desligado */
     int x = e.getX();

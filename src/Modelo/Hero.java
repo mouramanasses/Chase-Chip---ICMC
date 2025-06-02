@@ -1,25 +1,65 @@
 package Modelo;
 
+import Auxiliar.Consts;
+import Auxiliar.Desenho;
 import auxiliar.Posicao;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.Serializable;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 /**
  * Representa o personagem controlado pelo jogador. Extende Personagem.
+ * Agora compatível com Serializable:
+ * - Herdado de Personagem, que já marca o iImage como transient.
+ * - Possui recarregarSprite() para restaurar o sprite após desserializar.
  */
-public class Hero extends Personagem {
+public class Hero extends Personagem implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private int vidas;
     private boolean gameOver;
     private boolean gameWin;
 
-     //Construtor do herói. Passa o nome do PNG para o construtor de Personagem.     
+    /** Nome do arquivo de imagem (ex.: "Hero.png") para recarregar após load */
+    private String nomeImagePNG;
+
+    /**
+     * Construtor do herói. Passa o nome do PNG para o Personagem carregar.
+     * @param nomeArquivoPNG nome do arquivo dentro de Consts.PATH (ex.: "Hero.png")
+     */
     public Hero(String nomeArquivoPNG) {
-        super(nomeArquivoPNG);
-        this.vidas = 3;
+        super(nomeArquivoPNG);  // carrega o sprite pela primeira vez
+        this.nomeImagePNG = nomeArquivoPNG;
+        this.vidas    = 3;
         this.gameOver = false;
-        this.gameWin = false;
+        this.gameWin  = false;
         this.bTransponivel = false; // Herói bloqueia, não passa por cima
     }
 
-    //MÉTODOS DE MOVIMENTO
+    /**
+     * Chamado logo após desserializar para restaurar o campo transient iImage.
+     * Sem isso, o iImage ficaria null e o herói não seria desenhado.
+     */
+    @Override
+    public void recarregarSprite() {
+        carregarImageIcon(nomeImagePNG);
+    }
+
+    /**
+     * Desenha o herói na tela usando o sprite carregado.
+     */
+    @Override
+    public void autoDesenho() {
+        if (iImage != null) {
+            Desenho.desenhar(iImage, pPosicao.getColuna(), pPosicao.getLinha());
+        }
+    }
+
+    // MOVIMENTAÇÃO
 
     /** Move o herói para cima, decrementando a linha. */
     @Override
@@ -45,7 +85,7 @@ public class Hero extends Personagem {
         return this.pPosicao.moveRight();
     }
 
-    //MÉTODOS DE POSIÇÃO
+    // POSIÇÃO
 
     /** Define a posição em (linha, coluna). */
     @Override
@@ -59,7 +99,7 @@ public class Hero extends Personagem {
         return this.pPosicao;
     }
 
-    //MÉTODOS DE VIDA E ESTADO DE JOGO 
+    // VIDA E ESTADO DE JOGO
 
     /** Diminui uma vida; se chegar a zero, marca gameOver. */
     public void perderVida() {
@@ -79,7 +119,7 @@ public class Hero extends Personagem {
         return this.gameOver;
     }
 
-    /** Marca que o herói venceu (podemos usar isso em Fase5 ou quando coletar todos os chips). */
+    /** Marca que o herói venceu (pode ser usado ao coletar todos os chips). */
     public void setGameWin(boolean vencedor) {
         this.gameWin = vencedor;
     }
@@ -89,4 +129,3 @@ public class Hero extends Personagem {
         return this.gameWin;
     }
 }
-

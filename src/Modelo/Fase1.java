@@ -1,14 +1,19 @@
 package Modelo;
 
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.ImageIcon;
 
 /**
  * Fase1:
  *  - Carrega mapa1.txt (com 0=chão, 1=parede, 2=moeda, 3=fogo, 4=portal),
  *  - Posiciona o herói em (inicioLinha, inicioColuna),
  *  - Cria automaticamente todos os objetos “ChipColetavel” e “Fogo” a partir do mapa,
+ *  - Recarrega sprites do mapa após desserializar.
  */
-public class Fase1 extends Fase {
+public class Fase1 extends Fase implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     public Fase1(String arquivoMapa, int xInicial, int yInicial) {
         super(arquivoMapa, xInicial, yInicial);
@@ -18,7 +23,7 @@ public class Fase1 extends Fase {
         spritesMapa.put(1, carregarImagem("parede.png"));
         spritesMapa.put(2, carregarImagem("moeda.png"));
         spritesMapa.put(3, carregarImagem("fogo.png"));    // fogo virá do mapa (3)
-        spritesMapa.put(4, carregarImagem("portal.png"));  //portal de saída para próxima fase
+        spritesMapa.put(4, carregarImagem("portal.png"));  // portal de saída para próxima fase
 
         // 2) Carrega a matriz de inteiros do arquivo-texto (sem criar objetos aqui)
         carregarMapa();
@@ -75,5 +80,18 @@ public class Fase1 extends Fase {
         // 4) Não instanciamos nada para “4” (portal); se o seu código de desenho
         //    usa spritesMapa.get(4), o tile continuará exibindo o sprite do portal,
         //    mas não haverá Personagem associado em runtime.
+    }
+
+    /**
+     * Depois de desserializar, este método repopula spritesMapa, que é transient em Fase.
+     */
+    @Override
+    public void recarregarSpritesMapa() {
+        spritesMapa = new HashMap<>();
+        spritesMapa.put(0, carregarImagem("chao.png"));
+        spritesMapa.put(1, carregarImagem("parede.png"));
+        spritesMapa.put(2, carregarImagem("moeda.png"));
+        spritesMapa.put(3, carregarImagem("fogo.png"));
+        spritesMapa.put(4, carregarImagem("portal.png"));
     }
 }
