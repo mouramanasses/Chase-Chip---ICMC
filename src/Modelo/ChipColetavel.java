@@ -5,7 +5,6 @@ import java.io.Serializable;
 
 /**
  * Item colecionável (chip).  
- * Agora compatível com Serializable:
  * - Herdado de Personagem, que marca iImage como transient.
  * - Implementa recarregarSprite() para restaurar a imagem após desserializar.
  */

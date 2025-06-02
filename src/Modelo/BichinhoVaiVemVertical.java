@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 /**
  * Personagem que se move verticalmente “vai e vem”.
- * Agora compatível com Serializable:
  * - Herda de Personagem (que já marca iImage como transient).
  * - Possui recarregarSprite() para restaurar o sprite após desserializar.
  */

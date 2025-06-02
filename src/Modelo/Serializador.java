@@ -9,7 +9,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * Padrão de serialização inspirado em Jurassic Escape (Bruna).
  * Contém dois métodos estáticos: salvar e carregar objetos Serializable,
  * usando compressão GZIP para reduzir o tamanho do arquivo.
  */

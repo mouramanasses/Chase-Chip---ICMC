@@ -23,7 +23,7 @@ import java.io.File;
  * Cada fase “concreta” só precisa chamar super.inicializar() para que
  * o mapa seja carregado e todos os Personagens sejam criados.
  *
- * Agora compatível com Serializable:
+ * compatível com Serializable:
  *  - spritesMapa é transient (não serializamos ImageIcon).
  *  - Há um método recarregarSpritesMapa() para repopular spritesMapa após o load.
  */
@@ -67,7 +67,7 @@ public abstract class Fase implements Serializable {
      * onde o herói vai nascer (e também define a posição inicial da câmera).
      *
      * @param arquivoMapa   caminho do arquivo-texto que contém o código de cada tile
-     *                      (deve estar em algum subdiretório conhecido, ex.: "mapas/mapa1.txt")
+     *                      (deve estar em algum subdiretório conhecido, ex.: "imgs//mapa1.txt")
      * @param posHeroLinha  linha inicial do herói (0-based) — também usada como cameraLinha
      * @param posHeroColuna coluna inicial do herói (0-based) — também usada como cameraColuna
      */

@@ -11,7 +11,7 @@ import javax.swing.ImageIcon;
 /**
  * Personagem que se move horizontalmente “vai e vem”.
  * 
- * Agora compatível com Serializable: 
+ * compatível com Serializable: 
  * - Herdou de Personagem, que já marca iImage como transient.
  * - Possui recarregarSprite() para restaurar o sprite após desserializar.
  */

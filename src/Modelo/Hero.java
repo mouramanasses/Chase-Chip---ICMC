@@ -13,7 +13,7 @@ import javax.swing.ImageIcon;
 
 /**
  * Representa o personagem controlado pelo jogador. Extende Personagem.
- * Agora compatível com Serializable:
+ * compatível com Serializable:
  * - Herdado de Personagem, que já marca o iImage como transient.
  * - Possui recarregarSprite() para restaurar o sprite após desserializar.
  */
@@ -112,6 +112,27 @@ public class Hero extends Personagem implements Serializable {
     /** Retorna quantas vidas o herói ainda tem. */
     public int getVidas() {
         return this.vidas;
+    }
+    
+    /** 
+     * Permite setar manualmente o número de vidas. 
+     * Útil para reiniciar o jogo externamente.
+     */
+    public void setVidas(int vidas) {
+        this.vidas = vidas;
+    }
+
+    /**
+     * Volta o herói ao estado inicial: 3 vidas, gameOver=false, gameWin=false.
+     * A posição em si será reposicionada pela fase que o hospeda.
+     */
+    public void resetarEstado() {
+        this.vidas = 3;
+        this.gameOver = false;
+        this.gameWin  = false;
+        // Se quiser também resetar pontos ou energia, faça aqui:
+        // this.pontos = 0; // ou outro atributo que você use.
+        // A posição exata do herói (linha/coluna) será definida pela Fase
     }
 
     /** Retorna true se o herói está em game over. */

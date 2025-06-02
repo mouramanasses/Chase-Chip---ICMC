@@ -65,6 +65,18 @@ public class Tela extends javax.swing.JFrame implements MouseListener, KeyListen
     private boolean gameOver = false;
     private boolean gameWin = false;
     private ArrayList<Fase> fases = new ArrayList<>(); //lista de todas as fases
+    
+    /** 
+     * Flag que sinaliza que deveremos reiniciar o jogo 
+     * após exibir “GAME OVER” por um curto período.
+     */
+    private boolean deveReiniciar = false;
+
+    /** 
+     * Quando hero.isGameOver() se torna true, guardamos o tempo (ms) 
+     * para só reiniciar depois de um delay.
+     */
+    private long momentoGameOver = 0L;
 
 
     public Tela() {
@@ -292,6 +304,45 @@ public class Tela extends javax.swing.JFrame implements MouseListener, KeyListen
         }
         return;
     }
+    
+    //se o herói acabou de virar gameOver, marca flags
+        if (!gameOver && hero.isGameOver()) {
+            gameOver = true;
+            momentoGameOver = System.currentTimeMillis();
+            deveReiniciar = true;
+        }
+
+        //se estamos aguardando o reinício, só desenhamos "GAME OVER!" até passar o delay
+        if (deveReiniciar) {
+            long agora = System.currentTimeMillis();
+            if (agora - momentoGameOver >= 1000) {
+                // passou 1 segundo desde que o herói perdeu, então reinicia
+                reiniciarJogo();
+                // após reiniciar, continua para desenhar normalmente a Fase1 recém-inicializada
+            } else {
+                // desenha tela de GAME OVER e retorna (sem processar mapa/personagens)
+                g2.setColor(Color.BLACK);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.setColor(Color.RED);
+                g2.setFont(new Font("Arial", Font.BOLD, 48));
+                String mensagem = "GAME OVER!";
+                int larguraTexto  = g2.getFontMetrics().stringWidth(mensagem);
+                int alturaTexto   = g2.getFontMetrics().getHeight();
+                g2.drawString(
+                    mensagem,
+                    (getWidth() - larguraTexto) / 2,
+                    (getHeight() + alturaTexto) / 2
+                );
+
+                g.dispose();
+                g2.dispose();
+                if (!getBufferStrategy().contentsLost()) {
+                    getBufferStrategy().show();
+                }
+                return;
+            }
+        }
+
          if (hero.isGameOver()) {
         gameOver = true;
            }
@@ -495,12 +546,12 @@ public void keyPressed(KeyEvent e) {
             repaint();
             return;
             
-            // <<< SALVAR JOGO: chama o método que usa Serializador
+            //SALVAR JOGO: chama o método que usa Serializador
             case KeyEvent.VK_S:
                 salvarJogo();
                 return;
 
-            // <<< CARREGAR JOGO: chama o método que usa Serializador
+            //CARREGAR JOGO: chama o método que usa Serializador
             case KeyEvent.VK_L:
                 carregarJogo();
                 return;
@@ -572,6 +623,66 @@ public void keyPressed(KeyEvent e) {
         atualizaCamera();
         repaint();
         System.out.println("Jogo carregado com sucesso.");
+    }
+    
+    /**
+     * Reinicia praticamente todo o jogo:
+     * - Reseta flags (gameOver, gameWin, deveReiniciar)
+     * - Chama hero.resetarEstado() (3 vidas, gameOver=false, gameWin=false)
+     * - Reconstrói as 5 fases e posiciona o herói na fase 1
+     * - Atualiza câmera e faz repaint para mostrar a Fase1 imediatamente
+     *
+     * É chamado automaticamente 1 segundo após o herói perder todas as vidas.
+     */
+    private void reiniciarJogo() {
+        // 1) Limpa flags
+        this.deveReiniciar = false;
+        this.gameOver     = false;
+        this.gameWin      = false;
+
+        // 2) Reseta o herói (3 vidas, gameOver=false, gameWin=false)
+        hero.resetarEstado();
+
+        // 3) Recria as fases do zero
+        this.fases.clear();
+        Fase1 novaF1 = new Fase1("imgs//mapa1.txt", 0, 0);
+        novaF1.setHero(hero);
+        novaF1.inicializar();
+
+        Fase2 novaF2 = new Fase2("imgs//mapa2.txt", 0, 0);
+        novaF2.setHero(hero);
+        novaF2.inicializar();
+
+        Fase3 novaF3 = new Fase3("imgs//mapa3.txt", 0, 0);
+        novaF3.setHero(hero);
+        novaF3.inicializar();
+
+        Fase4 novaF4 = new Fase4("imgs//mapa4.txt", 0, 0);
+        novaF4.setHero(hero);
+        novaF4.inicializar();
+
+        Fase5 novaF5 = new Fase5("imgs//mapa5.txt", 0, 0);
+        novaF5.setHero(hero);
+        novaF5.inicializar();
+
+        fases.add(novaF1);
+        fases.add(novaF2);
+        fases.add(novaF3);
+        fases.add(novaF4);
+        fases.add(novaF5);
+
+        // 4) Define faseAtual como a nova Fase1 e zera índice de fase
+        this.faseAtual = novaF1;
+        this.fase = 1; // volta para Fase 1
+
+        // 5) Posiciona o herói na posição inicial da nova Fase1
+        hero.setPosicao(novaF1.getInicioLinha(), novaF1.getInicioColuna());
+
+        // 6) Atualiza câmera
+        atualizaCamera();
+
+        // 7) Força repaint imediato para exibir a Fase1 recém-criada
+        repaint();
     }
  public void mousePressed(MouseEvent e) {
     /* Clique do mouse desligado */

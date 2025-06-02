@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 
 /**
  * Chaser simples: persegue o herói, mas só se mexe a cada N chamadas de autoDesenho().
- * Já implementa toda a lógica de recarregar sprite para serialização.
+ * lógica de recarregar sprite para serialização.
  */
 public class Chaser extends Personagem {
     private static final long serialVersionUID = 1L;
